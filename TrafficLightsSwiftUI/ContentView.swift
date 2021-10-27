@@ -16,21 +16,20 @@ struct ContentView: View {
     @State private var onRed: Bool = false
     @State private var onYellow: Bool = false
     @State private var onGreen: Bool = false
-    
     @State private var wasPressed = false
+    
     private let offLight: Double = 0.3
     private let onLight: Double = 1
     
-    
-    
     var body: some View {
-        ZStack{
+        ZStack {
             LinearGradient(gradient: Gradient(colors: [.purple, .pink]),
                            startPoint: .topLeading,
                            endPoint: .bottomLeading)
-                .edgesIgnoringSafeArea(.all )
+                .edgesIgnoringSafeArea(.all)
             
             VStack {
+                Spacer()
                 
                 VStack(spacing: 18) {
                     CircleView(color: .red, alpha: onRed ? onLight : offLight)
@@ -41,23 +40,8 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                Button (action: {
-                    self.wasPressed = true
-                    
-                    switch self.currentColor {
-                    case .red:
-                        onRed.toggle()
-                        onYellow.toggle()
-                        currentColor = .yellow
-                    case .green:
-                        self.onGreen.toggle()
-                        self.onRed.toggle()
-                        self.currentColor = .red
-                    case .yellow:
-                        onYellow.toggle()
-                        onGreen.toggle()
-                        currentColor = .green
-                    }
+                Button(action: {
+                    buttonPressed()
                 }) {
                     wasPressed ? Text("NEXT") : Text("START")
                 }
@@ -70,13 +54,32 @@ struct ContentView: View {
                 
                 Spacer()
             }
-            
         }
-        
+    }
+    
+    private func buttonPressed() {
+        if !wasPressed {
+            currentColor = .red
+            onRed = true
+            wasPressed = true
+        } else {
+            switch currentColor {
+            case .red:
+                onRed.toggle()
+                onYellow.toggle()
+                currentColor = .yellow
+            case .green:
+                onGreen.toggle()
+                onRed.toggle()
+                currentColor = .red
+            case .yellow:
+                onYellow.toggle()
+                onGreen.toggle()
+                currentColor = .green
+            }
+        }
     }
 }
-
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
