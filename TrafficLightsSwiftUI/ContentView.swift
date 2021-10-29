@@ -12,70 +12,46 @@ enum ThreeColor {
 }
 
 struct ContentView: View {
-    @State private var currentColor: ThreeColor = .green
-    @State private var onRed: Bool = false
-    @State private var onYellow: Bool = false
-    @State private var onGreen: Bool = false
-    @State private var wasPressed = false
+    @State private var buttonTitle = "START"
+    @State private var currentLight = ThreeColor.red
     
-    private let offLight: Double = 0.3
-    private let onLight: Double = 1
-    
+    private func nextColor() {
+        switch currentLight {
+        case .red: currentLight = .yellow
+        case .green: currentLight = .red
+        case .yellow: currentLight = .green
+        }
+    }
+}
+
+extension ContentView {
     var body: some View {
         ZStack {
             LinearGradient(gradient: Gradient(colors: [.purple, .pink]),
                            startPoint: .topLeading,
                            endPoint: .bottomLeading)
-                .edgesIgnoringSafeArea(.all)
+                .ignoresSafeArea()
             
             VStack {
                 Spacer()
                 
                 VStack(spacing: 18) {
-                    CircleView(color: .red, alpha: onRed ? onLight : offLight)
-                    CircleView(color: .yellow, alpha: onYellow ? onLight : offLight)
-                    CircleView(color: .green, alpha: onGreen ? onLight : offLight)
+                    CircleView(color: .red, opacity: currentLight == .red ? 1 : 0.3)
+                    CircleView(color: .yellow, opacity: currentLight == .yellow ? 1 : 0.3)
+                    CircleView(color: .green, opacity: currentLight == .green ? 1 : 0.3)
                 }
                 .padding()
                 
                 Spacer()
                 
-                Button(action: {
-                    buttonPressed()
-                }) {
-                    wasPressed ? Text("NEXT") : Text("START")
+                ButtonView(title: buttonTitle) {
+                    if buttonTitle == "START" {
+                        buttonTitle = "NEXT"
+                    }
+                    nextColor()
                 }
-                .font(.system(size: 40, weight: .medium, design: .default).italic())
-                .foregroundColor(.black)
-                .frame(width: 200, height: 80)
-                .background(Color.white)
-                .cornerRadius(15)
-                .padding()
                 
                 Spacer()
-            }
-        }
-    }
-    
-    private func buttonPressed() {
-        if !wasPressed {
-            currentColor = .red
-            onRed = true
-            wasPressed = true
-        } else {
-            switch currentColor {
-            case .red:
-                onRed.toggle()
-                onYellow.toggle()
-                currentColor = .yellow
-            case .green:
-                onGreen.toggle()
-                onRed.toggle()
-                currentColor = .red
-            case .yellow:
-                onYellow.toggle()
-                onGreen.toggle()
-                currentColor = .green
             }
         }
     }
